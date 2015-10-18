@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <style>
+            body {
+                padding-top: 50px;
+                padding-bottom: 20px;
+            }
+        </style>
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+        <script src="js/main.js"></script>
+        <script src="js/vendor/jquery-1.11.2.min.js"></script>
+        <script>
+            $(document).ready(function() {
+               /** Get the client list using the current app key */ 
+               v_app_key = localStorage.getItem("x_app_key");
+               v_url = vg_url + "/crm/clientlist/%7B"+v_app_key+"%7D";
+                $.ajax({
+                    type: "GET",
+                    url: v_url,
+                    dataType: "json"
+                }).done(function(data) {
+                    console.log(data); 
+                    v_data = data;
+                    v_custcode = 'xx';
+                    v_name = 'xx';
+                    $.each(v_data, function(index, v_row) {
+                        $.each(v_row, function(index2, v_row2) {
+                            switch(index2) {
+                                case 'aaacustcode':
+                                    v_custcode = v_row2;
+                                    break;
+                                case 'aaaname':
+                                    v_name = v_row2;
+                                    break;
+                            }
+                        });
+                        v_html = "<button type='button' style='width: 75%; text-align: left' class='list-group-item'"
+                               + "onClick='view_client(\"" + v_custcode + "\", \"" + v_name + "\"); return false;'>" 
+                               + v_name
+                               + "</button>";
+                        $("#lst_clients").append(v_html);
+                    });
+                    });
+                });
+            function view_client(x_custcode, x_custname) {
+                localStorage.setItem("x_custcode", x_custcode);
+                localStorage.setItem("x_custname", x_custname);
+                location.replace("viewclient.html");
+            }
+        </script>
+
+    </head>
+    <body>
+
+        <div class="container">
+            <div class="jumbotron">
+                        <h1>RHM Sales Meter</h1>
+            </div> 
+            <div id="lst_clients" class="list-group"></div>
+            
+        <footer>
+           <p>&copy; Tracking Solutions Pty Ltd 2015</p>
+        </footer>
+ 
+            
+        </div>
+        <script src="js/vendor/bootstrap.min.js"></script>
+    </body>
+</html>

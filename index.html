@@ -22,6 +22,41 @@
         <link rel="stylesheet" href="css/main.css">
 
         <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+        <script src="js/main.js"></script>
+        <script>
+            function do_login() {
+                v_url = vg_url + "/crmlogin";
+                $.ajax({
+                    type: "POST",
+                    url: v_url,
+                    dataType: "json",
+                    data: {x_username: $("#inputEmail").val(), x_password: $("#inputPassword").val()}
+                }).done(function(data) {
+                    v_data = data;
+                    console.log(v_data);
+                    v_login_result = 0;
+                    v_app_key = 'x';
+                    $.each(v_data, function(index, v_row) {
+                        console.log("--> " + index + " : " + v_row);
+                        switch(index) {
+                            case 'login_result':
+                                v_login_result = Number(v_row);
+                                console.log("login_result is " + v_login_result);
+                                break;
+                            case 'app_key':
+                                v_app_key = v_row;
+                                break;
+                        }
+                    });
+                    if (v_login_result === 1) {
+                        localStorage.setItem("x_username", $("#inputEmail").val());
+                        localStorage.setItem("x_app_key", v_app_key);
+                        location.replace("mainmenu.html");
+                    }
+                    
+                });
+            }
+        </script>
     </head>
     <body>
         <!--[if lt IE 8]>
@@ -40,7 +75,7 @@
             <input type="checkbox" value="remember-me"> Remember me
           </label>
         </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" onClick="do_login(); return false;">Sign in</button>
       </form>
 
       <hr>
@@ -54,7 +89,7 @@
 
         <script src="js/vendor/bootstrap.min.js"></script>
 
-        <script src="js/main.js"></script>
+        
 
     </body>
 </html>

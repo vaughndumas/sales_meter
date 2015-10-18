@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <style>
+            body {
+                padding-top: 50px;
+                padding-bottom: 20px;
+            }
+        </style>
+        <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <script src="js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+        <script src="js/main.js"></script>
+        <script src="js/vendor/jquery-1.11.2.min.js"></script>
+        <script>
+            vg_custcode = localStorage.getItem("x_custcode");
+            vg_custname = localStorage.getItem("x_custname");
+            v_app_key = localStorage.getItem("x_app_key");
+            $(document).ready(function() {
+                v_app_key = localStorage.getItem("x_app_key");
+                v_url = vg_url + "/crm/clientcontracts/%7B"+v_app_key+"%7D/"
+                               + encodeURI(vg_custcode);
+                $.ajax( {
+                    type: "GET",
+                    url: v_url,
+                    dataType: "json" 
+                }).done(function(data) {
+                    v_data = data;
+                    console.log(v_data);
+                    $.each(data, function(v_index, v_row) {
+                        console.log(v_row);
+                        v_html = "<div class='row'>";
+                        v_abhstartdate = '&nbsp;';
+                        v_abhenddate = '&nbsp;';
+                        v_abhrental_freq = '';
+                        v_abhallowed_hours = '';
+                        v_aaddesc = '';
+                        v_hoursthismonth = 0;
+                        v_lastserviced = '';
+                        v_hourstoservice = '';
+                        v_serviceinterval = 0;
+                        $.each(v_row, function (v_index1, v_row1) {
+                            if (v_index1 === 'contract') {
+                                $.each(v_row1, function(v_index2, v_row2) {
+                                    switch (v_index2) {
+                                        case 'abhstartdate': v_abhstartdate = v_row2;
+                                                            break;
+                                        case 'abhenddate': v_abhenddate = v_row2;
+                                                           if (v_abhenddate === null) v_abhenddate = '&nbsp;';
+                                                            break;
+                                        case 'abhrental_freq': v_abhrental_freq = v_row2;
+                                                               break;
+                                        case 'abhallowed_hours': v_abhallowed_hours = v_row2;
+                                                                 break;
+                                        case 'aaddesc': v_aaddesc = v_row2;
+                                                                 break;
+                                        case 'aadlastservice':  v_lastserviced = v_row2;
+                                                                break;
+                                        case 'aadsvchrs': v_serviceinterval = v_row2;
+                                                          break;
+                                            
+                                    }
+                                });
+                            } else if (v_index1 === 'veh_stats') {
+                                $.each(v_row1, function(v_index3, v_row3) {
+                                   switch (v_index3) {
+                                       case 'monthtodate': v_hoursthismonth = v_row3;
+                                                           break;
+                                       case 'timetoservice': v_hourstoservice = v_row3;
+                                                             break;
+                                   } 
+                                });
+                            }
+                        });
+                        v_html += '<div class="col-sm-3" style="background-color: #c9e2b3">Contract start</div>';
+                        v_html += '<div class="col-sm-3">' + v_abhstartdate + '</div>';
+                        v_html += '<div class="col-sm-3" style="background-color: #c9e2b3">Contract end</div>';
+                        v_html += '<div class="col-sm-3">' + v_abhenddate + '</div>';
+                        v_html += '</div>';
+                        v_html += "<div class='row'>";
+                        v_html += '<div class="col-xs-1">&nbsp;</div>';
+                        v_html += '<div class="col-sm-2" style="font-weight: bold">Rental frequency</div>';
+                        v_html += '<div class="col-sm-3">' + v_abhrental_freq + '</div>';
+                        v_html += '<div class="col-sm-3" style="font-weight: bold">Contract hours</div>';
+                        v_html += '<div class="col-sm-3">' + v_abhallowed_hours + '</div>';
+                        v_html += '</div>';
+                        v_html += "<div class='row'>";
+                        v_html += '<div class="col-xs-1">&nbsp;</div>';
+                        v_html += '<div class="col-sm-2" style="font-weight: bold">Vehicle</div>';
+                        v_html += '<div class="col-sm-3">' + v_aaddesc + '</div>';
+                        v_html += '<div class="col-sm-3" style="font-weight: bold">Hours this month</div>';
+                        v_html += '<div class="col-sm-3">' + v_hoursthismonth + '</div>';
+                        v_html += '</div>';
+                        v_html += "<div class='row'>";
+                        v_html += '<div class="col-xs-1">&nbsp;</div>';
+                        v_html += '<div class="col-sm-2" style="font-weight: bold">Last serviced</div>';
+                        v_html += '<div class="col-sm-3">' + v_lastserviced + '</div>';
+                        v_html += '<div class="col-sm-3" style="font-weight: bold">Hours to service</div>';
+                        v_html += '<div class="col-sm-3">' + v_hourstoservice + ' (' + v_serviceinterval + ')</div>';
+                        v_html += '</div>';
+                        v_html += "<hr />";
+                        $("#contract_details").append(v_html);
+                    });
+                })
+                ;
+            });
+                            
+                
+        </script>
+
+    </head>
+    <body>
+
+        <div class="container">
+            <div class="jumbotron">
+                        <h1>RHM Sales Meter</h1>
+                        <h2>Details for <script>document.write(vg_custname);</script></h2>
+            </div>
+            <div id="contract_details">
+<!--
+            <div class="row">
+                <div class="col-sm-3" style="background-color: orange">Contract start</div>
+                <div class="col-sm-3">01 June 2015</div>
+                <div class="col-sm-3" style="background-color: orange">Contract end</div>
+                <div class="col-sm-3">31 December 2015</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-1">&nbsp;</div>
+                <div class="col-xs-2" style="font-weight: bold">Rental Freq.</div>
+                <div class="col-xs-3">Monthly</div>
+                <div class="col-xs-2" style="font-weight: bold">Contract hours</div>
+                <div class="col-xs-2">180</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-1">&nbsp;</div>
+                <div class="col-xs-2" style="font-weight: bold">Vehicle</div>
+                <div class="col-xs-3">Yard Tractor</div>
+                <div class="col-xs-2" style="font-weight: bold">Hours this month</div>
+                <div class="col-xs-2">65.4</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-1">&nbsp;</div>
+                <div class="col-xs-2" style="font-weight: bold">Last serviced</div>
+                <div class="col-xs-3">7 October 2015</div>
+                <div class="col-xs-2" style="font-weight: bold">Hours to service</div>
+                <div class="col-xs-2">350 (Int 500)</div>
+            </div>
+            <hr />
+-->
+            </div>
+            <button type="button" id="btn_clients" class="btn btn-primary">Clients</button>
+            
+        <footer>
+           <p>&copy; Tracking Solutions Pty Ltd 2015</p>
+        </footer>
+ 
+            
+        </div>
+        <script src="js/vendor/bootstrap.min.js"></script>
+        <script>
+            $("#btn_clients").click(function() {
+                location.replace('clientlist.html');
+            });
+            
+        </script>
+    </body>
+</html>
